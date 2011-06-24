@@ -23,7 +23,7 @@ local agents		= { }
 ------------------------------------------------------------------
 -- ev.loop()
 --
--- Coloca processo em a de espera por mensagens
+-- Coloca processo em espera por mensagens
 ------------------------------------------------------------------
 function ev.loop()
 
