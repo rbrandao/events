@@ -45,7 +45,7 @@ function ev.loop()
 
 			if not ret then
 				logger("Erro ao executar \'chunk\' de " .. client:getsockname() .. ": " .. "\""..err.."\"")
-				print("STRING:\n" .. msg)
+				print("[CHUNK]:\n" .. msg)
 			end
 		else
 			logger("Erro ao receber mensagem de " .. client:getsockname() .. ": " .. err)
