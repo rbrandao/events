@@ -15,7 +15,7 @@ local agents = ev.getAgents()
 
 -- Identificador deste agente
 local myID = ev.id()
-
+--[[
 -- Verifica se existem outros agentes ativos
 if #agents == 0 then
 	print("Não há agentes disponíveis!")
@@ -28,3 +28,13 @@ ev.send("all", "print(\"hello world!\")", func1)
 -- Testa envio apenas para o primeiro agente da lista
 ev.send(agents[1], "n = 50", func2)
 ev.send(agents[1], "print(string.format(\"meuID=%s n=%d\", ev.id(),n))", func2)
+]]
+
+
+	for i=1,#agents do
+		print (agents[i])
+	end
+
+
+
+

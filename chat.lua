@@ -30,7 +30,7 @@ while (1) do
 			ev.send("all","print(\"*["..ip..":"..arg[3]+1 .."]"..nickName.." has left the room  \")")
 			os.exit(1)		
 		end
-		-- se for um comando de mensagem direcionada então recebe o destinatário e a mensagem
+		-- se for um comando de mensagem direcionada então recebe o destinatário e a mensagem FORMATO--> #ID "mensagem entre aspas"
 		local dest,x_msg = string.match(cmd,"(.+)\"(.+)\"")
 		--envia a msg exclusiva
 		ev.send(dest,"print(\"*["..ip..":"..arg[3]+1 .."]"..nickName.." says only to you : ".. x_msg.. "\")")

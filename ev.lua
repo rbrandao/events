@@ -8,6 +8,7 @@ module(..., package.seeall);
 -- Socket do servidor e identificador do agente
 local server 		= nil
 local myID 		= nil
+local debug = false
 
 -- Endereço (host e porta) do nó central
 local centralHost	= nil
@@ -19,42 +20,6 @@ local agents		= { }
 ----------------------------------
 -- funções "públicas" do módulo --
 ----------------------------------
-
-------------------------------------------------------------------
--- ev.loop()
---
--- Coloca processo em espera por mensagens
-------------------------------------------------------------------
-function ev.loop()
-
-	while true do
-		logger('Aguardando mensagens')
-
-		-- Bloqueia a espera de uma conexao
-		local client = server:accept()
-		-- Recebe a mensagem
-		local msg, err = client:receive('*a')
-		
-		-- Se nao houve erro executa o codigo
-		if not err then
-			logger("Executando chunk recebido")
-
-			-- Executa chunk recebido
-			f = loadstring(msg)
-			ret, err = pcall(f)
-
-			if not ret then
-				logger("Erro ao executar \'chunk\' de " .. client:getsockname() .. ": " .. "\""..err.."\"")
-				print("[CHUNK]:\n" .. msg)
-			end
-		else
-			logger("Erro ao receber mensagem de " .. client:getsockname() .. ": " .. err)
-		end
-		
-		-- Fecha o cliente
-		client:close()
-	end
-end
 
 ------------------------------------------------------------------
 -- ev.send(dest, message, cb)
@@ -112,7 +77,7 @@ function ev.send(dest, message, cb)
 
 				-- Conecta no host destino
 				local sock = assert(socket.connect(host,port))
-
+				
 				-- Envia mensagem
 				ret,err = sock:send(message.."\n")
 
@@ -134,6 +99,42 @@ function ev.send(dest, message, cb)
 	end
 end
 
+
+------------------------------------------------------------------
+-- ev.loop()
+--
+-- Coloca processo em espera por mensagens
+------------------------------------------------------------------
+function ev.loop()
+
+	while true do
+		logger('Aguardando mensagens')
+
+		-- Bloqueia a espera de uma conexao
+		local client = server:accept()
+		-- Recebe a mensagem
+		local msg, err = client:receive('*a')
+		
+		-- Se nao houve erro executa o codigo
+		if not err then
+			logger("Executando chunk recebido")
+
+			-- Executa chunk recebido
+			f = loadstring(msg)
+			ret, err = pcall(f)
+			
+			if not ret then
+				logger("Erro ao executar \'chunk\' de " .. client:getsockname() .. ": " .. "\""..err.."\"")
+				print("[CHUNK]:\n" .. msg)
+			end
+		else
+			logger("Erro ao receber mensagem de " .. client:getsockname() .. ": " .. err)
+		end
+		
+		-- Fecha o cliente
+		client:close()
+	end
+end
 
 
 ------------------------------------------------------------------
@@ -171,7 +172,9 @@ end
 -- Imprime as mensagens de output concatenadas com o ID do agente
 ------------------------------------------------------------------
 function logger(s)
-	print('[' .. myID .. '] ' ..  s)
+	if ( debug ) then 
+		print('[' .. myID .. '] ' ..  s)
+	end 
 end
 
 ------------------------------------------------------------------
@@ -274,15 +277,16 @@ end
 -- 2) criação do identificador do agente (na forma "IP:PORTA")
 -- 3) publicação do agente no nó central
 ------------------------------------------------------------------
-function init() 
+function init(port_l) 
 	-- Recupera IP da interface de rede (código dependente de plataforma)
-	os.execute('ifconfig | grep -v \'127.0.0.1\' | grep -i \"inet end.:\" | awk {\'print $3\'} > /tmp/evtmp')
+	os.execute('ifconfig | grep -v \'127.0.0.1\' | grep -i \"inet \" | awk {\'print $2\'} | cut -d: -f2 > /tmp/evtmp ')
 	local f = assert(io.open('/tmp/evtmp', "r"))
 	local ip = f:read("*all")
+		
 	f:close()
-
+	
 	-- Abre socket local
-	server = assert(socket.bind(ip, 0))
+	server = assert(socket.bind(ip	, port_l))
 	local ip, port = server:getsockname()
 	--ip = socket.dns.toip(socket.dns.gethostname())
 
@@ -308,10 +312,8 @@ function init()
 
 	-- Publica-se no nó central
 	publishAgent()
-
 	logger("Agente inicializado!")
+	return ip,port
 end
 
--- Inicializa agente
-init()
 
