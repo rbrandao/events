@@ -107,6 +107,9 @@ end
 ------------------------------------------------------------------
 function ev.loop()
 
+	-- Publica-se no nó central
+	publishAgent()
+
 	while true do
 		logger('Aguardando mensagens')
 
@@ -120,13 +123,20 @@ function ev.loop()
 			logger("Executando chunk recebido")
 
 			-- Executa chunk recebido
-			f = loadstring(msg)
-			ret, err = pcall(f)
-			
-			if not ret then
-				logger("Erro ao executar \'chunk\' de " .. client:getsockname() .. ": " .. "\""..err.."\"")
+			f, err = loadstring(msg)
+
+			if not f then
+				logger("Erro ao compilar \'chunk\' de " .. client:getsockname() .. ": " .. "\""..err.."\"")
 				print("[CHUNK]:\n" .. msg)
+			else
+				local ret, err = pcall(f)
+
+				if not ret then
+					logger("Erro ao executar \'chunk\' de " .. client:getsockname() .. ": " .. "\""..err.."\"")
+					print("[CHUNK]:\n" .. msg)
+				end
 			end
+
 		else
 			logger("Erro ao receber mensagem de " .. client:getsockname() .. ": " .. err)
 		end
@@ -310,8 +320,6 @@ function init(port_l)
 		end
 	end
 
-	-- Publica-se no nó central
-	publishAgent()
 	logger("Agente inicializado!")
 	return ip,port
 end
