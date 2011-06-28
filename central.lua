@@ -45,6 +45,7 @@ while 1 do
 			local line, err = client:receive('*l')
 			for i=1,#agents do
 				if agents[i] == line then
+					
 					table.remove(agents,i)
 				end
 			end

@@ -6,6 +6,9 @@ local ip = ev.init(arg[3])
 local nickName = arg[2]
 
 if ( arg[1] == "S" )then
+	print("## Programa de Chat - Trabalho 3 de INF2545 - Sistemas Distribuidos 2011.1 / PUC-RIO ##")
+	print("## Por Felippe Rodrigues e Rafael Brandao ##")
+
 	--se for servidor entao escute as mensagens
 	ev.loop()
 end
@@ -28,7 +31,10 @@ while (1) do
 			-- anuncia a saída
 			ev.removeAgent()
 			ev.send("all","print(\"*["..ip..":"..arg[3]+1 .."]"..nickName.." has left the room  \")")
-			os.exit(1)		
+			ev.send(ip..":"..arg[3]+1,"ev.removeAgent()")
+			ev.send(ip..":"..arg[3]+1,"os.exit(1)")
+			ev.removeAgent()
+			os.exit(1)
 		end
 		-- se for um comando de mensagem direcionada então recebe o destinatário e a mensagem FORMATO--> #ID "mensagem entre aspas"
 		local dest,x_msg = string.match(cmd,"(.+)\"(.+)\"")

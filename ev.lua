@@ -292,7 +292,6 @@ function init(port_l)
 	os.execute('ifconfig | grep -v \'127.0.0.1\' | grep -i \"inet \" | awk {\'print $2\'} | cut -d: -f2 > /tmp/evtmp ')
 	local f = assert(io.open('/tmp/evtmp', "r"))
 	local ip = f:read("*all")
-		
 	f:close()
 	
 	-- Abre socket local

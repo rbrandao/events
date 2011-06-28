@@ -40,3 +40,7 @@ ev.send("all", string.format("print('%s: %s')", ev.id(), msg))
 
 ev.send(agents[1], prog, func2)
 ev.send(agents[1], "ev.send('all', 'print(ev.id() .. \": teste 2\")')", func2)
+
+
+
+
