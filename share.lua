@@ -108,7 +108,7 @@ while (true) do
 									
 		end
 	
-	elseif cmd == "exit" then
+	elseif line == "exit" then
 		
 		ev.send("all","print(\"*["..ip..":"..arg[3]+1 .."] is offline  \")")
 		ev.send(ip..":"..arg[3]+1,"ev.removeAgent()")
